@@ -19,6 +19,16 @@ exports.createMessage = async function(req, res, next) {
   }
 };
 
+exports.getMessages = async function(req, res, next) {
+  try {
+    let foundUser = await db.User.findById(req.params.id).populate("messages");
+    let messages = foundUser.messages.map(message => message);
+    return res.status(200).json(messages);
+  } catch(err) {
+    return next(err);
+  }
+}
+
 exports.getMessage = async function(req, res, next) {
   try {
     let message = await db.Message.find(req.params.message_id);
@@ -27,6 +37,15 @@ exports.getMessage = async function(req, res, next) {
     return next(err);
   }
 };
+
+exports.updateMessage = async function(req, res, next) {
+  try {
+    let message = await db.Message.findOneAndUpdate({_id: req.params.message_id}, req.body, {new: true});
+    return res.status(200).json(message);
+  } catch(err) {
+    return next(err);
+  }
+}
 
 exports.deleteMessage = async function(req, res, next) {
   try {
